@@ -39,7 +39,7 @@ body {
   overflow: hidden;
 }
 
-/* ── SHELL GRID (Изменено: 3 колонки. Аккаунты слева, чат в центре, поиск справа) ── */
+/* ── SHELL GRID (3 колонки. Аккаунты ВСЕГДА слева) ── */
 .shell {
   width: 100%;
   height: 100vh;
@@ -77,7 +77,7 @@ body {
   text-transform: uppercase;
 }
 
-/* Изменено на вертикальное отображение списка аккаунтов */
+/* Вертикальное отображение списка аккаунтов */
 .users-bar {
   display: flex;
   flex-direction: column;
@@ -493,21 +493,62 @@ mark {
 }
 .state-msg .icon { font-size: 28px; opacity: 0.3; }
 
-/* ── Мобильная адаптация ── */
+/* ── Мобильная адаптация (ИСПРАВЛЕНО: Меню аккаунтов всегда остается слева) ── */
 @media (max-width: 768px) {
   .shell {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 60px 1fr; /* Аккаунты слева (60px), остальное пространство - контент */
+    grid-template-rows: 1fr 32vh;    /* Чат сверху, блок поиска под ним */
   }
+  
   .accounts-zone {
-    max-height: 25vh;
-    border-right: none;
-    border-bottom: 2px solid var(--border);
+    grid-row: 1 / span 2; /* Растягиваем панель аккаунтов по всей высоте экрана слева */
+    border-right: 2px solid var(--border);
+    border-bottom: none;
+    max-height: none;
   }
+
+  .accounts-header {
+    justify-content: center;
+    padding: 10px 0;
+  }
+  .accounts-header h3 {
+    display: none; /* Скрываем текст заголовка ради экономии места */
+  }
+  .accounts-header::before {
+    content: "👥";
+    font-size: 16px;
+  }
+
+  .users-bar {
+    padding: 8px 4px;
+  }
+
+  .user-chip {
+    padding: 8px 4px;
+    justify-content: center;
+  }
+  .user-chip .chip-name {
+    display: none; /* Прячем текст имен, оставляем только аватарки */
+  }
+  
+  .avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+  }
+
+  .messages-zone {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
   .search-zone {
-    max-height: 30vh;
+    grid-column: 2;
+    grid-row: 2;
+    max-height: 32vh;
     border-top: 2px solid var(--border);
   }
+  
   .msg { max-width: 90%; }
 }
 </style>
@@ -636,7 +677,6 @@ function buildUsersBar() {
     bar.appendChild(chip);
   });
 
-  // Изменено на вертикальный скролл (block: 'nearest')
   requestAnimationFrame(() => {
     const active = bar.querySelector('.user-chip.active');
     if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
